@@ -19,6 +19,7 @@ let package = Package(
         .package(url: "https://github.com/mxcl/Path.swift.git", exact: "1.4.0"),
         .package(url: "https://github.com/groue/GRDB.swift", exact: "6.5.0"),
         .package(url: "https://github.com/yaslab/CSV.swift.git", exact: "2.4.3"),
+        .package(url: "https://github.com/JohnSundell/CollectionConcurrencyKit.git", exact: "0.2.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -31,6 +32,7 @@ let package = Package(
                 .product(name: "SwiftToolsSupport-auto", package: "swift-tools-support-core"),
                 .product(name: "Path", package: "Path.swift"),
                 .product(name: "CSV", package: "CSV.swift"),
+                .product(name: "CollectionConcurrencyKit", package: "CollectionConcurrencyKit"),
             ]),
         .target(
             name: "Core",

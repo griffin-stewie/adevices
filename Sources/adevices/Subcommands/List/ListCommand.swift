@@ -1,6 +1,7 @@
 import Foundation
 import TSCBasic
 import ArgumentParser
+import CollectionConcurrencyKit
 import Core
 
 @main
@@ -22,24 +23,32 @@ struct ListCommand: AsyncParsableCommand {
 
 extension ListCommand {
     private func run(options: ListCommandOptions) async throws {
-        let store = try deviceStore(options: options)
-        let devices = try await store.fetchAll().sorted(by: \.productDescription, oreder: .orderedDescending)
+        let stores = try deviceStores(options: options)
+        let devices = try await stores.asyncFlatMap { store in
+            try await store.fetchAll().sorted(by: \.productDescription, oreder: .orderedDescending)
+        }
+
         try output(devices: devices, options: options, stream: stdoutStream)
     }
 
-    private func deviceStore(options: ListCommandOptions) throws -> DevicesStore {
+    private func deviceStores(options: ListCommandOptions) throws -> [DevicesStore] {
         // Instantiate DeviceStore with specified database if its path is given
         if let db = options.databasePath {
-            return try DevicesStore(databaseURL: db.url)
+            let device = try DevicesStore(databaseURL: db.url)
+            return [device]
         }
 
         // Instantiate DeviceStore for the specified platform from Xcode.app in the specified path.
         if let xcode = options.xcodeAppPath {
-            return try DevicesStore(xcode: xcode.url, platform: options.platform)
+            return try options.platform.map {
+                try DevicesStore(xcode: xcode.url, platform: $0)
+            }
         }
 
         // Instantiate DeviceStore for the specified platform from active Xcode.app.
-        return try DevicesStore(platform: options.platform)
+        return try options.platform.map {
+            try DevicesStore(platform: $0)
+        }
     }
 
     private func output(devices: [Device], options: ListCommandOptions, stream: ThreadSafeOutputByteStream) throws {

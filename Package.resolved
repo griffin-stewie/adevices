@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "collectionconcurrencykit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/JohnSundell/CollectionConcurrencyKit.git",
+      "state" : {
+        "revision" : "b4f23e24b5a1bff301efc5e70871083ca029ff95",
+        "version" : "0.2.0"
+      }
+    },
+    {
       "identity" : "csv.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/yaslab/CSV.swift.git",

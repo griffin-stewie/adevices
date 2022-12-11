@@ -4,8 +4,8 @@ import Core
 import Path
 
 struct ListCommandOptions: ParsableArguments {
-    @Option(name: .shortAndLong, help: ArgumentHelp("platform"))
-    var platform: DevicesStore.Platform = .iPhone
+    @Option(name: .shortAndLong, parsing: .upToNextOption, help: ArgumentHelp("platform"))
+    var platform: [DevicesStore.Platform] = DevicesStore.Platform.allCases
 
     @Option(name: .shortAndLong, help: ArgumentHelp("output format"))
     var format: Writer.Format = .markdownTable
