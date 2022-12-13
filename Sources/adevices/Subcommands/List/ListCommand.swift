@@ -10,7 +10,7 @@ struct ListCommand: AsyncParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "adevices",
         abstract: "Get list of Apple devices from Xcode",
-        version: "0.1.0"
+        version: "0.2.0"
     )
 
     @OptionGroup()
