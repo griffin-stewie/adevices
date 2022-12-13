@@ -34,3 +34,6 @@ release_zip: check-env install
 	ditto -c -k --keepParent release_binary release_binary.zip
 	rm -rf release_binary
 	xcrun notarytool submit ./release_binary.zip --keychain-profile 'AC_PASSWORD' --wait
+
+artifactbundle: release_zip
+	sh ./Scripts/artifactbundle.sh
