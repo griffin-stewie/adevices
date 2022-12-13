@@ -28,7 +28,15 @@ extension ListCommand {
             try await store.fetchAll().sorted(by: \.productDescription, oreder: .orderedDescending)
         }
 
-        try output(devices: devices, options: options, stream: stdoutStream)
+        let stream: ThreadSafeOutputByteStream
+        if let filePath = options.outputPath {
+            let p = try AbsolutePath(validating: filePath.string)
+            let fileStream = try LocalFileOutputByteStream(p)
+            stream = ThreadSafeOutputByteStream(fileStream)
+        } else {
+            stream = stdoutStream
+        }
+        try output(devices: devices, options: options, stream: stream)
     }
 
     private func deviceStores(options: ListCommandOptions) throws -> [DevicesStore] {

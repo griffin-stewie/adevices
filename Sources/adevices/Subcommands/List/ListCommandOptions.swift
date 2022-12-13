@@ -18,5 +18,8 @@ struct ListCommandOptions: ParsableArguments {
 
     @Option(name: .long, help: ArgumentHelp("Path to Xcode.app"), completion: .file(extensions: ["app"]))
     var xcodeAppPath: Path?
+
+    @Option(name: [.customLong("output")], help: ArgumentHelp("Path to output file", valueName: "FILE_PATH", visibility: .hidden))
+    var outputPath: Path?
 }
 
