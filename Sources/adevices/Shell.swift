@@ -40,14 +40,14 @@ public final class Shell {
     ///   - terminationHandler: callback when signal arrived
     /// - Returns: status code
     /// - Throws: exception from TSCBasic.Process
-    public func run(arguments: [String], outputRedirection: TSCBasic.Process.OutputRedirection = .none, processSet: ProcessSet? = nil, terminationHandler: TerminationHandler? = nil, verbose: Bool = Process.verbose) throws -> (result: ProcessResult, statusCode: Int32) {
+    public func run(arguments: [String], outputRedirection: TSCBasic.Process.OutputRedirection = .none, processSet: ProcessSet? = nil, terminationHandler: TerminationHandler? = nil, verbose: Bool = false) throws -> (result: ProcessResult, statusCode: Int32) {
         if let h = terminationHandler {
             handlers.append(h)
         } else if let processSet = processSet {
             let handler = { processSet.terminate() }
             handlers.append(handler)
         }
-        let result = try _run(arguments: arguments, outputRedirection: outputRedirection, processSet: processSet)
+        let result = try _run(arguments: arguments, outputRedirection: outputRedirection, processSet: processSet, verbose: verbose)
 
         switch result.exitStatus {
         case .signalled(let v):
@@ -59,10 +59,15 @@ public final class Shell {
 }
 
 extension Shell {
-    fileprivate func _run(arguments: [String], outputRedirection: TSCBasic.Process.OutputRedirection = .none, processSet: ProcessSet? = nil, verbose: Bool = Process.verbose) throws -> ProcessResult {
-        let process = TSCBasic.Process.init(arguments: arguments, outputRedirection: outputRedirection, verbose: verbose)
+    fileprivate func _run(arguments: [String], outputRedirection: TSCBasic.Process.OutputRedirection = .none, processSet: ProcessSet? = nil, verbose: Bool = false) throws -> ProcessResult {
+        let process = TSCBasic.Process(arguments: arguments, outputRedirection: outputRedirection, loggingHandler: verbose ? Self.logToStdout : .none)
         try process.launch()
         try processSet?.add(process)
         return try process.waitUntilExit()
+    }
+
+    fileprivate static func logToStdout(_ message: String) {
+        stdoutStream <<< message <<< "\n"
+        stdoutStream.flush()
     }
 }
